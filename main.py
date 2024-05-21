@@ -1,4 +1,4 @@
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 import PySimpleGUI as sg
 from datetime import datetime
 
@@ -29,9 +29,19 @@ while True:
         break
     if event == 'Добавить':
         try:
-            wb = load_workbook('clinic_visits.xlsx')
-            sheet = wb['Лист1']
-            ID = len(sheet['ID'])
+            try:
+                wb = load_workbook('clinic_visits.xlsx')
+                sheet = wb['Лист1']
+            except FileNotFoundError:
+                wb = Workbook()
+                sheet = wb.active
+                sheet.title = 'Лист1'
+                sheet.append(['ID', 'ФИО пациента', 'Дата рождения', 'Пол', 'Номер телефона',
+                           'Номер страхового полиса', 'Номер медицинской карты', 'Группа крови',
+                           'Специализация врача', 'Квалификация врача', 'Номер кабинета',
+                           'Дата приема', 'Время приема', 'Время добавления'])
+            max_row = sheet.max_row
+            ID = max_row
             time_stamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
             gender = 'Мужской' if values['male'] else 'Женский'
